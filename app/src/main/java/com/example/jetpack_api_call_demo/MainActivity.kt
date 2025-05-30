@@ -235,7 +235,6 @@ fun BottomNavAnimation(
     }
 }
 
-
 @Composable
 private fun BottomNavItem(
     screen: Screen,
