@@ -39,7 +39,7 @@ object NetworkModule {
             .addInterceptor { chain ->
                 val original = chain.request()
                 val requestBuilder = original.newBuilder()
-                    .header("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL3N0ZzgzLm9jdG9zZ2xvYmFsLmluZm8vY29sbGVjdGlvbmVhc3lfcGhwL3YxL2xvZ2luIiwiaWF0IjoxNzQ4NTE1NjQ1LCJuYmYiOjE3NDg1MTU2NDUsImp0aSI6IkJEa3BiOUhzNGVhaGM0MksiLCJzdWIiOiIxIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.NyCUEgY--VueDCuR39STNEPI9-BTDZpQYBarvBNS3nI")
+                    .header("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2RldjgzLm9jdG9zZ2xvYmFsLmluZm8vY29sbGVjdGlvbmVhc3lfcGhwL3YxL2xvZ2luIiwiaWF0IjoxNzQ4NTgyMTExLCJuYmYiOjE3NDg1ODIxMTEsImp0aSI6Ik91eGFDOHlLdDN1QnNNV0EiLCJzdWIiOiIyIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.SOCFQDHjr4uLxGykzmXS7W2NbCAmxCMCw29Q_WPbAkQ")
                 chain.proceed(requestBuilder.build())
             }
             .build()
@@ -55,7 +55,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(moshi: Moshi, client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://stg83.octosglobal.info/collectioneasy_php/v1/")
+            .baseUrl("https://dev83.octosglobal.info/collectioneasy_php/v1/")
             .client(client)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()

@@ -1,5 +1,6 @@
 package  com.jetpack_demo.base_api
 
+import com.example.jetpack_api_call_demo.repo.AddClientRepository
 import com.jetpack_demo.base_api.ApiServices
 import com.jetpack_demo.repo.ClientListRepository
 import com.squareup.moshi.Moshi
@@ -17,4 +18,9 @@ object RepositoryModule {
     @Provides
     fun provideResendOtpRepository(apiService: ApiServices, moshi: Moshi) =
         ClientListRepository(apiService, moshi)
+
+    @Singleton
+    @Provides
+    fun provideAddClientRepository(apiService: ApiServices, moshi: Moshi, ) =
+        AddClientRepository(apiService, moshi)
 }

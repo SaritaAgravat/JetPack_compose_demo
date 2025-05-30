@@ -127,5 +127,7 @@ dependencies {
     // GSON Convert
     implementation(libs.gson)
 
+    //navigation compose
+    implementation(libs.navigationCompose)
 
 }
