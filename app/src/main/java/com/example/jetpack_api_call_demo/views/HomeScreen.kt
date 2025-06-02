@@ -297,26 +297,6 @@ fun ClientRow(client: ClientListData) {
                 .border(1.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
         )
 
-        // optional edit-overlay, if you still need it
-//        Box(
-//            modifier = Modifier
-//                .size(60.dp)
-//                .offset(x = 46.dp, y = 46.dp) // bottom-right of the 60×60 image
-//        ) {
-//            Surface(
-//                shape = CircleShape,
-//                color = MaterialTheme.colorScheme.surface,
-//                shadowElevation = 2.dp,
-//                modifier = Modifier.size(24.dp)
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Filled.Edit,
-//                    contentDescription = "Edit",
-//                    tint = MaterialTheme.colorScheme.primary,
-//                    modifier = Modifier.padding(4.dp)
-//                )
-//            }
-//        }
 
         Spacer(Modifier.width(18.dp))
 
