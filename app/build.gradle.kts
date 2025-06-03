@@ -130,4 +130,7 @@ dependencies {
     //navigation compose
     implementation(libs.navigationCompose)
 
+    //line chart libr.
+    implementation ("io.github.ehsannarmani:compose-charts:2.0.0")
+
 }
