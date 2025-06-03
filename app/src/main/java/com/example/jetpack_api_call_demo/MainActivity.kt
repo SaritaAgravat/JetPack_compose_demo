@@ -109,12 +109,16 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.graphicsLayer
+import com.example.jetpack_api_call_demo.viewModel.AddPeopleViewModel
+import com.example.jetpack_api_call_demo.views.AddPeopleScreen
+import com.example.jetpack_api_call_demo.views.ListOfItemScreen
 import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: GetClientListResponseViewModel by viewModels()
     private val addClientViewModel: AddClientDataViewmodel by viewModels()
+    private val addPeopleViewModel: AddPeopleViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,7 +127,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApp(
                 viewModel = viewModel,
-                addClientViewModel = addClientViewModel
+                addClientViewModel = addClientViewModel,
+                addPeopleViewModel = addPeopleViewModel
             )
 
         }
@@ -133,7 +138,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(
     viewModel: GetClientListResponseViewModel,
-    addClientViewModel: AddClientDataViewmodel
+    addClientViewModel: AddClientDataViewmodel,
+    addPeopleViewModel: AddPeopleViewModel,
 ) {
     val navController = rememberNavController()
     val screens = listOf(
@@ -156,8 +162,19 @@ fun MyApp(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") { HomeScreen(viewModel, navController, false) }
-            composable("clients") { AddClientScreen(addClientViewModel, {}, false) }
+            composable("clients") { ListOfItemScreen(false,navController = navController,addClientViewModel = addPeopleViewModel) }
             composable("settings") { HelloWorldScreen(false) }
+
+            // 👇 Add this for the "Add Client" screen
+            composable("add_client") {
+                AddPeopleScreen(
+                    isDarkMode = false,
+                    onSubmit = { name, amount ->
+                        addPeopleViewModel.addPerson(name, amount)
+                        navController.popBackStack() // return to previous screen
+                    }
+                )
+            }
         }
     }
 }
