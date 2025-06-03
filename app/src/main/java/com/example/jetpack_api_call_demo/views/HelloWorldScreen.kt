@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
 
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -39,7 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.jetpack_api_call_demo.app_ui.AppText
+import com.example.jetpack_api_call_demo.app_ui.BarData
+import com.example.jetpack_api_call_demo.app_ui.BarGroup
+import com.example.jetpack_api_call_demo.app_ui.CustomBarChart
 import com.example.jetpack_api_call_demo.app_ui.DynamicColumnChart
+//import com.example.jetpack_api_call_demo.app_ui.DynamicColumnChart
 import com.jetpack_demo.model.response.ClientListResponse.ClientListData
 import com.jetpack_demo.util.rememberSvgPainter
 import ir.ehsannarmani.compose_charts.models.Bars
@@ -67,54 +73,76 @@ fun HelloWorldScreen(  isDarkMode: Boolean) {
                 Brush.verticalGradient(
                     colors = listOf(Color(0x000000), Color(0x000000))
                 )
-            ) //
+            )
     ) {
-         Column {
-             AppText(
-                 text = "299",
-                 showCurrencySymbol = true,
-                 currencySymbol = "$",
-                 color = Color.Green,
-                 fontSize = 18.sp,
-                 fontWeight = FontWeight.Bold
-             )
-             Spacer(modifier = Modifier.height(16.dp))
-             AppText(
-                 text = "Hello World",
-                 showCurrencySymbol = false,
-                 fontSize = 16.sp
-             )
-             Spacer(modifier = Modifier.height(16.dp))
-             OverViewUiData()
-             Spacer(modifier = Modifier.height(16.dp))
-             Row (
-                 modifier = Modifier.fillMaxWidth() .padding(start = 24.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
-                 horizontalArrangement = Arrangement.SpaceBetween,
-                 verticalAlignment = Alignment.CenterVertically
-             ){
-                 AppText(
-                     text = "People Summery",
-                     showCurrencySymbol = false,
-                     currencySymbol = "$",
-                     color = Color.Black,
-                     fontSize = 14.sp,
-                     fontWeight = FontWeight.Bold
-                 )
+        // Make column scrollable
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()) // <-- this enables scrolling
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppText(
+                    text = "OVERVIEW",
+                    showCurrencySymbol = false,
+                    currencySymbol = "$",
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
-                 AppText(
-                     text = "View All",
-                     showCurrencySymbol = false,
-                     currencySymbol = "$",
-                     color = balanceTextColor,
-                     fontSize = 14.sp,
-                     fontWeight = FontWeight.Bold
-                 )
-             }
-             PeopleSummaryList()
-             Spacer(modifier = Modifier.height(16.dp))
-             ChartScreen()
-             SimpleCard()
-         }
+                AppText(
+                    text = "THIS MONTHS",
+                    showCurrencySymbol = false,
+                    currencySymbol = "$",
+                    color = balanceTextColor,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            OverViewUiData()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppText(
+                    text = "People Summery",
+                    showCurrencySymbol = false,
+                    currencySymbol = "$",
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                AppText(
+                    text = "View All",
+                    showCurrencySymbol = false,
+                    currencySymbol = "$",
+                    color = balanceTextColor,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            PeopleSummaryList()
+            Spacer(modifier = Modifier.height(16.dp))
+
+//            ChartScreen()
+//            Spacer(modifier = Modifier.height(16.dp))
+            customBarChart()
+        }
     }
 }
 
@@ -125,7 +153,7 @@ fun OverViewUiData() {
     val balanceTextColor  = Color(0xFFD283FF)
     Card(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
@@ -470,6 +498,51 @@ fun ChartScreen() {
         )
 
     )
-
     DynamicColumnChart(data = data)
+
+}
+
+@Composable
+fun customBarChart(){
+
+    val chartData = listOf(
+        BarGroup(
+            label = "Jan",
+            bars = listOf(
+                BarData("Linux", 40.0f, Color.Blue),
+                BarData("Windows", 60.0f, Color.Red)
+            )
+        ),
+        BarGroup(
+            label = "Feb",
+            bars = listOf(
+                BarData("Linux", 30.0f, Color.Blue),
+                BarData("Windows", 10.0f, Color.Red)
+            )
+        ),
+        BarGroup(
+            label = "March",
+            bars = listOf(
+                BarData("Linux", 30.0f, Color.Blue),
+                BarData("Windows", 95.0f, Color.Red)
+            )
+        )
+        ,
+        BarGroup(
+            label = "April",
+            bars = listOf(
+                BarData("Linux", 10.0f, Color.Blue),
+                BarData("Windows", 60.0f, Color.Red)
+            )
+        )
+        ,
+        BarGroup(
+            label = "May",
+            bars = listOf(
+                BarData("Linux", 30.0f, Color.Blue),
+                BarData("Windows", 15.0f, Color.Red)
+            )
+        )
+    )
+    CustomBarChart(data = chartData, maxValue = 100.0f, minValue = 0.0f)
 }
