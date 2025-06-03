@@ -32,14 +32,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.jetpack_api_call_demo.app_ui.AppText
+import com.example.jetpack_api_call_demo.app_ui.DynamicColumnChart
 import com.jetpack_demo.model.response.ClientListResponse.ClientListData
 import com.jetpack_demo.util.rememberSvgPainter
+import ir.ehsannarmani.compose_charts.models.Bars
 
 @Composable
 fun HelloWorldScreen(  isDarkMode: Boolean) {
@@ -108,6 +111,8 @@ fun HelloWorldScreen(  isDarkMode: Boolean) {
                  )
              }
              PeopleSummaryList()
+             Spacer(modifier = Modifier.height(16.dp))
+             ChartScreen()
              SimpleCard()
          }
     }
@@ -425,3 +430,46 @@ data class PersonSummary(
     val amount: String
 )
 
+@Composable
+fun ChartScreen() {
+    val data = listOf(
+        Bars(
+            label = "Jan",
+            values = listOf(
+                Bars.Data(value = 40.0, label = "Linux", color = SolidColor(Color.Blue)),
+                Bars.Data(value = 60.0, label = "Windows", color = SolidColor(Color.Red))
+            )
+        ),
+        Bars(
+            label = "Feb",
+            values = listOf(
+                Bars.Data(value = 30.0, label = "Linux", color = SolidColor(Color.Blue)),
+                Bars.Data(value = 10.0, label = "Windows", color = SolidColor(Color.Red))
+            )
+        ),
+        Bars(
+            label = "March",
+            values = listOf(
+                Bars.Data(value = 30.0, label = "Linux", color = SolidColor(Color.Blue)),
+                Bars.Data(value = 95.0, label = "Windows", color = SolidColor(Color.Red))
+            )
+        ),
+        Bars(
+            label = "April",
+            values = listOf(
+                Bars.Data(value = 10.0, label = "Linux", color = SolidColor(Color.Blue)),
+                Bars.Data(value = 60.0, label = "Windows", color = SolidColor(Color.Red))
+            )
+        ),
+        Bars(
+            label = "May",
+            values = listOf(
+                Bars.Data(value = 30.0, label = "Linux", color = SolidColor(Color.Blue)),
+                Bars.Data(value = 15.0, label = "Windows", color = SolidColor(Color.Red))
+            )
+        )
+
+    )
+
+    DynamicColumnChart(data = data)
+}
