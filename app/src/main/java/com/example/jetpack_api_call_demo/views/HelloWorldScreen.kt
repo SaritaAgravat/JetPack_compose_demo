@@ -3,6 +3,7 @@ package com.example.jetpack_api_call_demo.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Divider
 
 import androidx.compose.foundation.layout.width
@@ -21,14 +23,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +46,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.semantics.Role.Companion.Button
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,11 +60,19 @@ import com.example.jetpack_api_call_demo.app_ui.DynamicColumnChart
 import com.jetpack_demo.model.response.ClientListResponse.ClientListData
 import com.jetpack_demo.util.rememberSvgPainter
 import ir.ehsannarmani.compose_charts.models.Bars
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import com.example.jetpack_api_call_demo.app_ui.AppButton
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HelloWorldScreen(  isDarkMode: Boolean) {
     val balanceTextColor  = Color(0xFFD283FF)
-
+    var showSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val gradientColors = if (isDarkMode) {
         listOf(Color.Black, Color.Black)
     } else {
@@ -126,14 +145,20 @@ fun HelloWorldScreen(  isDarkMode: Boolean) {
                     fontWeight = FontWeight.Bold
                 )
 
-                AppText(
-                    text = "View All",
-                    showCurrencySymbol = false,
-                    currencySymbol = "$",
-                    color = balanceTextColor,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Box(
+                    modifier = Modifier.clickable {
+                        showSheet = true  // 👈 Show the bottom sheet
+                    }
+                ) {
+                    AppText(
+                        text = "View All",
+                        showCurrencySymbol = false,
+                        currencySymbol = "$",
+                        color = balanceTextColor,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             PeopleSummaryList()
@@ -142,6 +167,106 @@ fun HelloWorldScreen(  isDarkMode: Boolean) {
 //            ChartScreen()
 //            Spacer(modifier = Modifier.height(16.dp))
             customBarChart()
+        }
+
+        // 👇 Bottom Sheet inside the same composable
+        if (showSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showSheet = false },
+                sheetState = sheetState,
+                containerColor = Color(0xFFCED4DA),
+            ) {
+
+                val people = listOf(
+                    PersonSummary("ic_user_place_holder", "James Gunn", "Owes you \$500.00"),
+                    PersonSummary("ic_user_place_holder", "Daniel Hunt", "Owes you -\$500.00"),
+                    PersonSummary("ic_user_place_holder", "Mark Rumario", "Owes you \$500.00")
+                )
+                val lightGrayColor = Color(0xFFFFFFFF)
+                var selectedIndex by remember { mutableStateOf(0) }
+
+                Card(
+                    modifier = Modifier
+                        .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 16.dp)
+                        .fillMaxWidth()
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFFCAC4D0), // 🔁 change to any color you like
+                            shape = RoundedCornerShape(12.dp) // must match Card shape
+                        ) ,
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                    colors = CardDefaults.cardColors(containerColor = lightGrayColor),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        // Show dynamic list
+                        people.forEachIndexed {  index, person ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { selectedIndex = index }
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Load image
+                                Image(
+                                    painter =rememberSvgPainter(person.imageUrl),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(30.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.Gray),
+                                    contentScale = ContentScale.Crop
+                                )
+
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                Column {
+                                    Text(person.name, fontWeight = FontWeight.Bold)
+                                }
+
+                                // Push the next image to the end
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                // Icon at the end
+                                // ✅ Conditionally show selected icon
+                                if (index == selectedIndex) {
+                                    Image(
+                                        painter = rememberSvgPainter("ic_profile_select"),
+                                        contentDescription = "Selected profile",
+                                        modifier = Modifier
+                                            .size(25.dp)
+                                            .clip(CircleShape)
+                                    )
+                                }
+                            }
+
+//                        if (index != people.lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 0.dp, horizontal = 1.dp),
+                                thickness = 1.dp,
+                                color = Color(0xFFCAC4D0)
+                            )
+//                        }
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        AppButton(text = "Manage Profiles") {
+                             showSheet = false
+                        }
+
+                    }
+                }
+
+            }
         }
     }
 }
@@ -546,3 +671,55 @@ fun customBarChart(){
     )
     CustomBarChart(data = chartData, maxValue = 100.0f, minValue = 0.0f)
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheetDemo() {
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+        confirmValueChange = {
+            // Allow sheet to hide
+            it != SheetValue.PartiallyExpanded
+        }
+    )
+    val coroutineScope = rememberCoroutineScope()
+    var showSheet by remember { mutableStateOf(false) }
+
+    // Button to show bottom sheet
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = { showSheet = true }) {
+            Text("Show Bottom Sheet")
+        }
+    }
+
+    // Bottom Sheet Dialog
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showSheet = false
+            },
+            sheetState = sheetState,
+        ) {
+            // Content inside bottom sheet
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("This is a Bottom Sheet Dialog", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(20.dp))
+                Button(onClick = {
+                    showSheet = false
+                }) {
+                    Text("Close")
+                }
+            }
+        }
+    }
+}
+
